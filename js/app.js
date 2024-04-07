@@ -1,56 +1,59 @@
 // Array con i codici  promozionali
 const promoCode = ["YHDNU32", "JANJC63", "PWKCN25", "SJDPO96", "POCIE24"];
 
-//Richiamo gli elementi dal DOM
-const jobsElement = document.getElementById('selectJobs').value;
-let promoElement = document.getElementById('promo').value;
-const form = document.getElementById('form');
-const name = document.getElementById('name');
-const surname = document.getElementById('surname');
-const email = document.getElementById('email');
-let checkPreventivo = document.getElementById("check");
-
-const oreLavoro = 10;
+//definisco una variabile con le ore di lavoro
+const oreLavoro = 10; 
+//Creo un oggetto con all'interno i prezzi per ogni lavoro
 const lavoro = {
     backend: 20.50,
     frontend: 15.30,
     analisi: 33.60
-}
-let prezzoOra
-let prezzoTotale = 0;
+};
 
-function preventivo(){
-    let sconto = 0;
-    //SE lavoro è contenuto in jobsElement ed è diverso da 0, assegna quel valore alla variabile prezzoOra
-if(lavoro[jobsElement] !== 0){
-    prezzoOra = lavoro[jobsElement];
-}else{ //ALTRIMENTI alla variabile prezzoOra verrà assegnato un valore pari a 0
-    prezzoOra = 0;
-    alert("Codice non corretto, al prezzo finale non verrà applicato nessuno sconto.")
-}
+// recupero gli elementi dal DOM
+const jobsElement = document.getElementById('selectJobs');
+let promoElement = document.getElementById('promo');
+const formElement = document.getElementById ('form');
+let priceSectionElement = document.getElementById('priceSection');
+let name = document.getElementById('name');
+let surname = document.getElementById ('surname');
+let email = document.getElementById ('email');
+let textArea = document.getElementById ('Textarea');
 
-let prezzoFinale = prezzoOra * oreLavoro;
+//ascoltiamo un l'evento "submit" nel form. Quando viene inviato compilato ed inviato il formo verrà eseguita la funzione.
+formElement.addEventListener("submit", function(event){
+    event.preventDefault(); //annullo il comportamento di default del form
 
-if(promoCode.includes(promoElement)) {
-    sconto = 0.25;
-}
+    let nameValue = name.value;
+    let surnameValue = surname.value;
+    let emailValue = email.value;
+    let textAreaValue = textArea.value; 
+    
 
-//calcolo del prezzo finale sottraendo dal prezzo totale lo sconto
-let prezzoSconto = prezzoTotale - (prezzoTotale * sconto);
+    //L'utente seleziona il tipo di lavoro, e viene assegnato alla variabile "tipoLavoro"
+    let tipoLavoro = jobsElement.value;
 
-//stampiamo lo sconto con 2 cifre decimali
-const prezzoSconto2 = prezzoSconto.toFixed(2);
+    //prendiamo il prezzo orario per ogni lavoro e l'assegnamo alla variabile "prezzoOra"
+    let prezzoOra = lavoro[tipoLavoro];
+    let prezzoTotale = prezzoOra * oreLavoro;
 
+    //L'utente inserisce un codice sconto, e viene assegnato alla variabile "sconto"
+    let sconto = promoElement.value;
 
-//stampo il risultato nella pagina HTML
-checkPreventivo.innerHTML = prezzoSconto2;
-}
-//quando il bottone verrà cliccato verra avviata la funzione
-const submitElement = document.getElementById("submit");
-submitElement.addEventListener("click", function(event){
-    event.preventDefault(); //annula il comportamento predefinito del form
-    preventivo(); //invoco la funzione
-    console.log("Chiede un preventivo: " + name + " " + surname + " " + email + " ");
+    //SE il contenuto della variabile "sconto" è incluso pure nell'array "promoCode" si applica uno sconto del 25%
+    if(promoCode.includes(sconto)){
+        prezzoTotale = prezzoTotale * 0.25;  //sconto del 25% moltiplicando il prezzo totale per 0,25
+    }else { //ALTRIMENTI se il codice non è incluso l'utente viene avvisato, e non viene applicato lo sconto del 25%
+        alert("Il codice promozionale non corretto, o non inserito. Al prezzo finale non sarà aggiunto alcuno sconto.")
+    }
+
+    //il prezzoTotale viene stampato con 2 cifre decimali
+    prezzoTotale.toFixed(2);
+
+    //il risultato viene stampato nella pagina HTML
+    priceSectionElement.textContent = "€ " + prezzoTotale;
+
+    //Stampo le informazione del form nella console
+    console.log("Chiede un preventivo: " + "NOME:" + " "+ nameValue + " " + "COGNOME:" +" "+ surnameValue + " " + "EMAIL:" + " " + emailValue + "per il ruolo di: " + tipoLavoro);
+    console.log("info aggiuntive: " + textAreaValue);
 })
-
-
